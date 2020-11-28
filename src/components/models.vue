@@ -13,7 +13,7 @@
                     <div class="card-body ">
                         <img :src="data.hero_image" alt="" width="100%">
                         <h2 class="title mt-4">{{data.make}} {{data.model}}</h2>
-                        <h2 class="title  mt-4" style="color:#4E44D8; font-weight:bold" v-if="data.superset.length > 0 ">₹ {{getPrice(data.superset)}}</h2>
+                        <h2 class="title  mt-4" style="color:#4E44D8; font-weight:bold" v-if="data.superset.length > 0 ">{{getPrice(data.superset)}}</h2>
                         <h2 class="price pb-1"></h2>
                         <button class="butn px-3 py-2 " @click="goToCheckout(data._id)">Buy Now</button>
                     </div>
@@ -56,7 +56,8 @@ export default {
          if(min == max){
              return max.price
          }else{
-            return min.price + '-' + max.price
+             
+            return this.$options.filters.currency(min.price) + '-' + this.$options.filters.currency(max.price)
          }
         },
         getprice(data){

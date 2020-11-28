@@ -17,7 +17,9 @@ Vue.config.productionTip = false
 // Vue.filter('currency', function (value) {
 //   return parseFloat(value).toLocaleString();
 // });
-
+Vue.filter('currency', function (value) {
+  return '₹' + parseFloat(value).toLocaleString();
+});
 
 new Vue({
   router,

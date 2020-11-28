@@ -1,6 +1,6 @@
 <template>
   <div
-    class="col-md-9 display my-5"
+    class="col-md-9 display mb-5"
     style="margin: 0 auto;"
   >
     <div class="row col-md-12 m-0 p-0" v-if="currentSelected.length > 0">
@@ -11,9 +11,9 @@
         <img class="onHover" width="100%" :src="currentImage" alt="" />
       </div>
 
-      <div class="col-md-6 text-left pt-5 col-sm-order-1 discription">
+      <div style="" class="col-md-6 text-left pt-5 col-sm-order-1 discription">
         <div class="col-md-12">
-          <h2>{{ vehicle.make }} {{ vehicle.model }}</h2>
+          <h2 class="heading-title">{{ vehicle.make }} {{ vehicle.model }}</h2>
         </div>
         <div class="col-md-10 my-4">
           <label for="variant">Choose Variant</label>
@@ -49,9 +49,7 @@
                   v-bind:style="{ 'background-color': selectedColor }"
                   class="dot mr-2"
                 ></span> -->
-                <h1>
-                <strong> ₹ {{ currentSelected[0].price }}</strong>
-              </h1>
+                
               </div>
             </transition>
           </div>
@@ -63,12 +61,24 @@
             *Please select color.
           </p> -->
         </div>
-
+        
         <div class="col-md-12  text-left px-3 my-4">
+          <div v-if="currentSelected[0].add_ons.length > 0 && variant && colorCheck">
+              <p class="heading-title mt-4 mb-2 m-0 p-0" style="font-size:15px">Add-ons</p>
+              <b-card class="mb-2 m-0 p-0" v-for="(data, index) in currentSelected[0].add_ons" :key="index">
+                  <input type="checkbox" class="m-0 p-0" :value="data" v-model="selectedaddons"> <span class="checkbox-label heading-title" style="font-size:15px"> {{data.name}} at ₹{{data.price}}</span>
+                  <p class="labels m-0 p-0">{{data.description}}</p>
+              </b-card>
+              </div>
+
           <transition name="fade">
+
+             
+
             <div
               v-if="currentSelected[0].additional_cost && variant && colorCheck"
             >
+             
               <div
                 class="d-flex m-0 p-0 col-md-8 justify-content-between transit"
                 v-for="(data, index) in currentSelected[0].additional_cost"
@@ -77,24 +87,37 @@
                 <p class="labels m-0 p-0 mt-1">
                   {{ data.name }}
                 </p>
-                <p class="labels m-0 p-0 mt-1">₹ {{ data.price }}</p>
+                <p class="labels m-0 p-0 mt-1">{{ data.price | currency }}</p>
+              </div>
+              <div class="text-left mt-3">
+                <h1 class="heading-title">
+                <strong>Total: {{ totalPrice | currency }}</strong>
+              </h1>
               </div>
             </div>
           </transition>
+          
           <transition name="fade">
+         
             <div
               class="col-md-12 m-0 p-0 mt-4"
               v-if="currentSelected && variant && colorCheck"
             >
               <!-- <h1>
                 <strong> ₹. {{ currentSelected[0].price }}</strong>
-              </h1> -->
-            <hr>
-            <p>Fulfilled By</p>
-              <p class="labels m-0 p-0 mt-1">Dealer Name: {{ currentSelected[0].dealer.name}}</p>
-              <p class="labels m-0 p-0 mt-2">Phone No:  {{ currentSelected[0].dealer.phone }}</p>
-              <p class="labels m-0 p-0 mt-2">Address:  {{ currentSelected[0].dealer.address }}, {{ currentSelected[0].dealer.city }} - {{ currentSelected[0].dealer.pincode }}</p>
-              <p class="labels m-0 p-0 mt-2 mb-3">About Dealer:  {{ currentSelected[0].dealer.comment }}</p>
+              </h1> 
+            <hr>-->
+            <div class="card p-2 mt-2 mb-4">
+              <p class="heading-title" style="font-size:15px">FULFILLED BY</p>
+              <p class="labels m-0 p-0 mt-1"><span class="bold">Dealer Name:</span> {{ currentSelected[0].dealer.name}}</p>
+              <p class="labels m-0 p-0 mt-2"><span class="bold">Phone No:</span>  {{ currentSelected[0].dealer.phone }}</p>
+              <p class="labels m-0 p-0 mt-2"><span Address:>Address:</span>  {{ currentSelected[0].dealer.address }}, {{ currentSelected[0].dealer.city }} - {{ currentSelected[0].dealer.pincode }}</p>
+              <p v-if="!showDetailDealer" class="link" @click="showDetailDealer=!showDetailDealer">Show More</p>
+              <div v-if="showDetailDealer">
+                <p class="labels m-0 p-0 mt-2 mb-3"><span class="bold">About Dealer:</span>  {{ currentSelected[0].dealer.comment }}</p>
+                <p class="link" @click="showDetailDealer=!showDetailDealer">Show Less</p>
+              </div>
+            </div>
               <button
                 :disabled="!variant"
                 class="btn btn-primary"
@@ -109,29 +132,29 @@
       </div>
 
       <div class="col-md-12 mt-5 row">
-        <b-tabs content-class="mt-3 col-md-12" class="col-md-12" justified>
-          <b-tab title="General Specification" active>
+        <b-tabs content-class="mt-3 col-md-12" class="col-md-12 heading-title-md" justified>
+          <b-tab title="GENERAL SPECIFICATION" active>
             <div class="row">
-              <div class="col-md-4 my-5">
+              <div class="col-md-6 my-5">
                 <div class="col-md-12 d-flex m-0 p-0 justify-content-between">
-                  <p><strong>Model/Make</strong></p>
-                  <p>{{ vehicle.make }} {{ vehicle.model }}</p>
+                  <p class="heading-title-sm"><strong>Model/Make</strong></p>
+                  <p class="labels">{{ vehicle.make }} {{ vehicle.model }}</p>
                 </div>
                 <div class="col-md-12 d-flex m-0 p-0 justify-content-between">
-                  <p><strong>MILEAGE</strong></p>
-                  <p>{{ vehicle.mileage}}kmpl</p>
+                  <p class="heading-title-sm"><strong>MILEAGE</strong></p>
+                  <p class="labels">{{ vehicle.mileage}}kmpl</p>
                 </div>
                 <div class="col-md-12 d-flex m-0 p-0 justify-content-between">
-                  <p><strong>Displacement</strong></p>
-                  <p>{{ vehicle.displacement}}cc</p>
+                  <p class="heading-title-sm"><strong>Displacement</strong></p>
+                  <p class="labels">{{ vehicle.displacement}}cc</p>
                 </div>
                 <div class="col-md-12 d-flex m-0 p-0 justify-content-between">
-                  <p><strong>Tank Capacity</strong></p>
-                  <p>{{ vehicle.tank_capacity }}L</p>
+                  <p class="heading-title-sm"><strong>Tank Capacity</strong></p>
+                  <p class="labels">{{ vehicle.tank_capacity }}L</p>
                 </div>
                 <div class="col-md-12 d-flex m-0 p-0 justify-content-between">
-                  <p><strong>Start Type</strong></p>
-                  <p>{{ vehicle.start_type }}</p>
+                  <p class="heading-title-sm"><strong>Start Type</strong></p>
+                  <p class="labels">{{ vehicle.start_type }}</p>
                 </div>
               </div>
               <div class="col-md-4 pb-5 m-0 p-0">
@@ -139,9 +162,9 @@
               </div>
             </div>
           </b-tab>
-          <b-tab title="About Vehicle"><p>
+          <b-tab title="ABOUT VEHICLE"><p>
             <div class="col-md-12 my-5 text-left">
-              <p>{{vehicle.about_vehicle}}</p>
+              <p class="labels">{{vehicle.about_vehicle}}</p>
             </div>
           </b-tab>
 
@@ -150,8 +173,21 @@
 
 
     </div>
-    <div v-if="loading">
-      <p>Please wait...</p>
+    <div v-if="loading" class="mt-4 pt-5">
+      <b-row>
+        <b-col class="mb-4">
+          <b-skeleton-img></b-skeleton-img>
+        </b-col>
+        <b-col class="pt-4 pl-3">
+        <b-skeleton type="button"></b-skeleton>
+        <b-skeleton class="mt-2" animation="wave" width="85%"></b-skeleton>
+         <b-skeleton class="mt-2" type="input"></b-skeleton>
+        </b-col>
+        <b-col cols="12" class="mt-3">
+          <b-skeleton-img no-aspect height="150px"></b-skeleton-img>
+        </b-col>
+</b-row>
+
     </div>
   </div>
 </template>
@@ -173,9 +209,16 @@ export default {
       colorCheck: "",
       variantsList: [],
       selectedColor: "",
+      showDetailDealer:false,
+      selectedaddons:[]
     };
   },
   created() {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
     axios
       .get(
         "https://backend-bikex.herokuapp.com/api/otr_models/model-data-with-dealer/" +
@@ -222,6 +265,19 @@ export default {
     },
   },
   computed: {
+    totalPrice(){
+      
+        if(this.selectedaddons.length ==0){
+          return this.currentSelected[0].price
+        }else{
+          var x = 0
+          for(var i in this.selectedaddons){
+            x+=Number(this.selectedaddons[i].price)
+          }
+          return Number(this.currentSelected[0].price) + Number(x)
+        }
+     
+    }
     // variantList() {
     //   if (!this.variant) {
     //     return this.vehicle
@@ -247,9 +303,14 @@ export default {
   border-left:1px solid rgb(128, 128, 128,0.2);
 }
 */
+.discription::-webkit-scrollbar {
+  display: none;
+}
 .labels {
-  font-size: 13px;
   color: gray;
+    font-size: 15px;
+    font-weight: normal;
+    font-family: "Gilroy"
 }
 .fade-enter-active,
 .fade-leave-active {
@@ -262,7 +323,42 @@ export default {
 .display {
   min-height: 300px;
   transition: 2s;
+  font-family: "Gilroy";
+    font-size: 17px;
+    font-weight: normal;
+    font-family: "Gilroy"
 }
+.link{
+  color: #4E44D8;
+  cursor:pointer
+}
+.title{
+    font-size: 17px;
+    font-weight: normal;
+    font-family: "Gilroy"
+}
+.heading-title{
+    color: #2A2A2A;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: "Gilroyf"
+}
+.heading-title-sm{
+    color: #2A2A2A;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: "Gilroyf"
+}
+.heading-title-md{
+    color: #2A2A2A;
+    font-size: 17px;
+    font-weight: bold;
+    font-family: "Gilroyf"
+}
+.nav-link .a{
+    color: red !important;
+}
+
 .transit {
   transition: 2s;
 }
