@@ -15,7 +15,10 @@
                         <h2 class="title mt-4">{{data.make}} {{data.model}}</h2>
                         <h2 class="title  mt-4" style="color:#4E44D8; font-weight:bold" v-if="data.superset.length > 0 ">{{getPrice(data.superset)}}</h2>
                         <h2 class="price pb-1"></h2>
-                        <button class="butn px-3 py-2 " @click="goToCheckout(data._id)">Buy Now</button>
+                        <div class="col-md-12 d-flex justify-content-between">
+                            <button class="butn px-3 py-2 " @click="goToCheckout(data._id)">Buy Now</button>
+                            <!-- <p class="labels" @click="compare(data)">COMPARE</p> -->
+                        </div>
                     </div>
                 </div>
             </div> 
@@ -65,12 +68,28 @@ export default {
         },
         goToCheckout(id){
             this.$router.push('/display/' + id)
+        },
+        compare(data){
+            if(this.compareData.length < 3){
+                if(this.compareData){
+                    var compare = this.compareData
+                }else{
+                    compare = []
+                }
+                compare.push(data)
+                localStorage.compare = JSON.stringify(compare)
+            }else{
+                alert('You can add only three data')
+            }
         }
 
     },
     computed:{
         allModels(){
             return this.$store.state.currentStateModel
+        },
+        compareData(){
+            return JSON.parse(localStorage.compare)
         }
     }
   

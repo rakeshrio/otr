@@ -17,7 +17,8 @@ export default new Vuex.Store({
     getModelsWithSearch:[],
     getModelsWithMakeAndBudget:[],
     makingAJAX:false,
-
+    cart:JSON.parse(localStorage.getItem('cart')),
+    compare:[]
   },
   mutations: {
     getCurrentStateModel(state, value){
@@ -47,6 +48,9 @@ export default new Vuex.Store({
     getAllBrands(state, value){
       state.getAllBrands = value;
     },
+    COMPARE(state, value){
+      state.compare = value
+    }
 
   },
   actions: {
@@ -56,6 +60,12 @@ export default new Vuex.Store({
         commit('getCurrentStateModel', data.data)
       });
     },
+
+    getCompareData({commit}){
+      var x = JSON.parse(localStorage.compare)
+      commit('COMPARE', x)
+    },
+
     // getAllBrands({commit}){
     //   axios.get('https://backend-bikex.herokuapp.com/api/otr_models/makes/data').
     //   then(data=> {

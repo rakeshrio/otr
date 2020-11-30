@@ -9,6 +9,16 @@
         style="overflow:hidden"
       >
         <img class="onHover" width="100%" :src="currentImage" alt="" />
+        <div class="col-md-12 text-left mt-3" v-if="currentSelected && variant && currentSelected[0].description  && colorCheck">
+    <h1 class="heading-title">
+      What's in this variant?
+    </h1>
+<div class="alert alert-success" role="alert">
+ {{currentSelected[0].description}}
+</div>
+        
+        
+        </div>
       </div>
 
       <div style="" class="col-md-6 text-left pt-5 col-sm-order-1 discription">
@@ -66,7 +76,7 @@
           <div v-if="currentSelected[0].add_ons.length > 0 && variant && colorCheck">
               <p class="heading-title mt-4 mb-2 m-0 p-0" style="font-size:15px">Add-ons</p>
               <b-card class="mb-2 m-0 p-0" v-for="(data, index) in currentSelected[0].add_ons" :key="index">
-                  <input type="checkbox" class="m-0 p-0" :value="data" v-model="selectedaddons"> <span class="checkbox-label heading-title" style="font-size:15px"> {{data.name}} at ₹{{data.price}}</span>
+                  <input type="checkbox" class="m-0 p-0" v-if="data.status == 'active'" :value="data" v-model="selectedaddons"> <span class="checkbox-label heading-title" style="font-size:15px"> {{data.name}} at ₹{{data.price}}</span>
                   <p class="labels m-0 p-0">{{data.description}}</p>
               </b-card>
               </div>
@@ -210,7 +220,8 @@ export default {
       variantsList: [],
       selectedColor: "",
       showDetailDealer:false,
-      selectedaddons:[]
+      selectedaddons:[],
+      make_model:''
     };
   },
   created() {
@@ -228,6 +239,7 @@ export default {
         this.vehicle = result.data;
         this.variantsList = _.uniqBy(this.vehicle.superset, "variant");
         this.currentImage = this.vehicle.hero_image;
+        this.make_model = this.vehicle.make +' '+ this.vehicle.model
         this.currentSelected.push(this.vehicle.superset[0]);
         this.loading = false;
       })
@@ -253,6 +265,17 @@ export default {
       this.currentImage = this.currentSelected[0].image;
     },
     proceed() {
+      let cartData=[{
+        "addons":this.selectedaddons,
+        "selectedItem": {"dealer":this.currentSelected[0].dealer,"color":this.currentSelected[0].color,
+        "id":this.currentSelected[0].id,"variant":this.currentSelected[0].variant,"image":this.currentSelected[0].image,
+        "price":this.currentSelected[0].price,"model":this.make_model
+        },
+        "_id":this.vehicle._id,
+        "make_model":this.make_model
+      }]
+      
+      localStorage.setItem("cart", JSON.stringify(cartData))
       this.$router.push(
         "/cart/" + this.$route.params.id + "/" + this.currentSelected[0].id
       );

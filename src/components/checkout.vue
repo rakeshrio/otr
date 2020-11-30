@@ -84,18 +84,18 @@
             </thead>
             <tbody class="text-left">
                 <tr v-if="superdata">
-                    <th scope="row">{{cartdata.make}} {{cartdata.model}} {{superdata[0].color}} {{superdata[0].variant}}</th>
-                    <td>₹ {{superdata[0].price}}</td>   
+                    <th scope="row">{{cartdata[0].make_model}} {{cartdata[0].color}} {{cartdata[0].variant}}</th>
+                    <td>{{totalPrice | currency}}</td>   
                 </tr>
 
                 <!-- <tr>
                     <th scope="row">Subtotal</th>
-                    <td>₹ {{superdata[0].price}}</td>
+                    <td>₹ {{cartdata.price}}</td>
                 </tr> -->
 <!-- 
                 <tr>
                     <th scope="row">Total</th>
-                    <td>₹ {{superdata[0].price}}</td>
+                    <td>₹ {{cartdata.price}}</td>
                 </tr> -->
 
             </tbody>
@@ -193,24 +193,36 @@ export default {
             })
         },
         placeOrder(){
-            axios.post('https://backend-bikex.herokuapp.com/api/otr_purchase/generateOrder' , {
+            axios.post('https://cors-anywhere.herokuapp.com/https://backend-bikex.herokuapp.com/api/otr_purchase/generateOrder' , {
                 firstname: this.first_name,
                 lastname: this.last_name,
                 phone:this.phone_number,
                 email:this.email,
                 payment_status:0,
                 booking_status:0,
-                model_id: this.cartdata._id,
-                superset_data: this.superdata[0],
-                amount: this.superdata[0].price
+                del_address:this.street_address,
+                del_postalCode:this.post_code,
+                del_city:this.city,
+                del_state:this.state,
+                rto_address:this.rto_street_address,
+                rto_postalCode:this.rto_post_code,
+                rto_city:this.rto_city,
+                rto_state:this.rto_state,
+                model_id: this.cartdata[0]._id,
+                superset_data: this.cartdata[0].selectedItem,
+                add_ons:this.cartdata[0].addons,
+                vehicle_details: this.cartdata[0].selectedItem,
+                amount: this.totalPrice
             }).
             then(response=> {
+                window.console.log(response.data)
                 this.otr_order_id = response.data._id
                 this.makepayment(response.data._id)
+                window.console.log('1st')
             })
             .catch(x=>{
-                window.console.log(x.response.data.msg)
-                this.$bvToast.toast(x.response.data.msg, {
+                window.console.log(x.response)
+                this.$bvToast.toast(x.response, {
                     title: 'Error',
                     autoHideDelay: 5000,
                 })
@@ -218,30 +230,31 @@ export default {
         },
        makepayment(id){
             this.loading=true
+            window.console.log('2nd')
             var options = {
                             "key": "rzp_test_bddb6fLRf7CHxu", // rzp_live_Vi238TQEagSN3x Enter the Key ID generated from the Dashboard
-                            "amount": this.superdata[0].price * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise or INR 500.
+                            "amount": this.totalPrice * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise or INR 500.
                             "currency": "INR",
-                            "name": this.cartdata.make + ' ' + this.cartdata.model ,
+                            "name": this.cartdata[0].make_model ,
                             "email":this.email,
                             "phone":this.phone_number,
                             "order_id":id,
-                            "description": "Purchase " + this.cartdata.make + ' ' + this.cartdata.model,
+                            "description": "Purchase " + this.cartdata[0].make_model,
                             "payment_capture":1,    
                             "handler": ((res)=>{
                                  this.updatedatabase(res)
                             }),
                             "notes": {
                                 "address": "note value",
-                                "vehicle_id":this.cartdata._id,
-                                "superset_id": this.superdata[0].id
+                                "vehicle_id":this.cartdata[0]._id,
+                                "superset_id": this.cartdata[0].selectedItem.id
                             },
                             "theme": { 
                                 "color": "#ffb52f"
                             }
                         };
                         this.$http.post('https://cors-anywhere.herokuapp.com/https://rzp_live_Vi238TQEagSN3x:c2ImBntiX8l4ZwHPTXfbJdx4@bikex.in/v1/orders',{
-                            "amount":this.superdata[0].price * 100,
+                            "amount":this.totalPrice * 100,
                             "currency":"INR",
                             "payment_capture":1
                         }).then((res)=>{
@@ -264,19 +277,28 @@ created(){
 },
 watch:{
     cartdata(){
-       this.superdata = 
-        this.cartdata.superset.filter(x=>{
-        return x.id == this.superset
+    //    this.superdata = 
+    //     this.cartdata.superset.filter(x=>{
+    //     return x.id == this.superset
 
-        })
+    //     })
     },
      rtoSameAsDelivery(){
             this.rtoSameAsDeliveryTrigger()
         }
 },
 computed:{
-    cartdata(){
-        return this.$store.state.getModelsWithoutDealer
+    // cartdata(){
+    //     return this.$store.state.getModelsWithoutDealer
+    // },
+    totalPrice(){
+        var addonsPrice = 0
+        if(this.cartdata[0].addons.length > 0){
+            for(var i in this.cartdata[0].addons){
+                addonsPrice = addonsPrice + Number(this.cartdata[0].addons[i].price)
+            }
+        }
+        return Number(this.cartdata[0].selectedItem.price) + Number(addonsPrice)
     },
     valid(){
         if(this.first_name && this.last_name && this.phone_number && this.email){
@@ -284,7 +306,10 @@ computed:{
         }else{
             return false
         }
-    }
+    },
+    cartdata() {
+      return JSON.parse(localStorage.getItem('cart'))
+    },
 }
 
 }

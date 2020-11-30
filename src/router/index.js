@@ -12,6 +12,8 @@ import search from '../components/modelsbreakdown/search'
 import budget from '../components/modelsbreakdown/budget'
 import displacement from '../components/modelsbreakdown/displacement'
 import catalogue from '../components/catalogue/catalogue'
+import compare from '../components/compare'
+import success from '../components/success'
 
 Vue.use(VueRouter)
 
@@ -24,6 +26,7 @@ const routes = [
   { path: '/checkout/:id/:value', component: checkout },
   { path: '/landingpage', component: landingpage },
   { path: '/catalogue', component: catalogue },
+  { path: '/success/:id', component: success },
 
   // models breakdown
   { path: '/model-by-make/:id', component: make },
@@ -31,7 +34,8 @@ const routes = [
   { path: '/model-by-search/:id', component: search },
   { path: '/model-by-budget/:id', component: budget },
   { path: '/model-by-displacement/:id', component: displacement },
-  
+  { path: '/compare', component: compare },
+
 ]
 
 const router = new VueRouter({
