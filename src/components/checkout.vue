@@ -84,8 +84,12 @@
             </thead>
             <tbody class="text-left">
                 <tr v-if="superdata">
-                    <th scope="row">{{cartdata[0].make_model}} {{cartdata[0].color}} {{cartdata[0].variant}}</th>
-                    <td>{{totalPrice | currency}}</td>   
+                    <th scope="row">{{cartdata[0].make_model}} {{cartdata[0].color}} {{cartdata[0].variant}} - {{totalPrice | currency}}
+                       + GST - {{gstAmount | currency}} (3%)
+                    </th>
+                    <td>{{checkOutPrice | currency}}</td>
+                    
+
                 </tr>
 
                 <!-- <tr>
@@ -212,7 +216,7 @@ export default {
                 superset_data: this.cartdata[0].selectedItem,
                 add_ons:this.cartdata[0].addons,
                 vehicle_details: this.cartdata[0].selectedItem,
-                amount: this.totalPrice
+                amount: this.checkOutPrice
             }).
             then(response=> {
                 window.console.log(response.data)
@@ -233,7 +237,7 @@ export default {
             window.console.log('2nd')
             var options = {
                             "key": "rzp_test_bddb6fLRf7CHxu", // rzp_live_Vi238TQEagSN3x Enter the Key ID generated from the Dashboard
-                            "amount": this.totalPrice * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise or INR 500.
+                            "amount": this.checkOutPrice * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise or INR 500.
                             "currency": "INR",
                             "name": this.cartdata[0].make_model ,
                             "email":this.email,
@@ -254,7 +258,7 @@ export default {
                             }
                         };
                         this.$http.post('https://cors-anywhere.herokuapp.com/https://rzp_live_Vi238TQEagSN3x:c2ImBntiX8l4ZwHPTXfbJdx4@bikex.in/v1/orders',{
-                            "amount":this.totalPrice * 100,
+                            "amount":this.checkOutPrice * 100,
                             "currency":"INR",
                             "payment_capture":1
                         }).then((res)=>{
@@ -299,6 +303,12 @@ computed:{
             }
         }
         return Number(this.cartdata[0].selectedItem.price) + Number(addonsPrice)
+    },
+    gstAmount(){
+        return Math.round(0.03*this.totalPrice)
+    },
+    checkOutPrice(){
+        return Number(this.totalPrice) + Number(this.gstAmount)
     },
     valid(){
         if(this.first_name && this.last_name && this.phone_number && this.email){
