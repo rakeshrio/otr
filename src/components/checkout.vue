@@ -85,7 +85,7 @@
             <tbody class="text-left">
                 <tr v-if="superdata">
                     <th scope="row">{{cartdata[0].make_model}} {{cartdata[0].color}} {{cartdata[0].variant}} - {{totalPrice | currency}}
-                       + GST - {{gstAmount | currency}} (3%)
+                       + convenience charge - {{convenienceAmount | currency}} (3%)
                     </th>
                     <td>{{checkOutPrice | currency}}</td>
                     
@@ -304,11 +304,11 @@ computed:{
         }
         return Number(this.cartdata[0].selectedItem.price) + Number(addonsPrice)
     },
-    gstAmount(){
+    convenienceAmount(){
         return Math.round(0.03*this.totalPrice)
     },
     checkOutPrice(){
-        return Number(this.totalPrice) + Number(this.gstAmount)
+        return Number(this.totalPrice) + Number(this.convenienceAmount)
     },
     valid(){
         if(this.first_name && this.last_name && this.phone_number && this.email){
